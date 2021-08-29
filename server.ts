@@ -20,18 +20,18 @@ app.get("/", (_req, res) => {
   res.send(SNAKE_INFO)
 });
 
-app.get("/start", (req, res) => {
+app.post("/start", (req, res) => {
   const state = req.body as GameState;
   console.log(`${state.game.id} START`)
   res.send("ok");
 });
 
-app.get("/move", (req, res) => {
+app.post("/move", (req, res) => {
   // TODO
   res.send({ move: 'down' });
 });
 
-app.get("/end", (req, res) => {
+app.post("/end", (req, res) => {
   const state = req.body as GameState;
   console.log(`${state.game.id} END`);
   res.send("ok");
