@@ -19,7 +19,7 @@ export interface Battlesnake {
   name: string;
   health: number;
   body: Position[],
-  latnecy: string;
+  latency: string;
   head: Position;
   length: number;
   shout?: string;
