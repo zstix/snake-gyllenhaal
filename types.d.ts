@@ -7,6 +7,6 @@ interface Game {
   }
 }
 
-interface GameState {
+export interface GameState {
   game: Game
 }

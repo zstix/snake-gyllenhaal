@@ -1,4 +1,5 @@
 import express from 'express';
+import { GameState } from './types';
 
 const PORT = process.env.PORT || 8080;
 
