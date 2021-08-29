@@ -1,4 +1,5 @@
 import express from 'express';
+import { chooseMove } from './snakeLogic';
 import { GameState } from './types';
 
 const PORT = process.env.PORT || 8080;
@@ -27,8 +28,8 @@ app.post("/start", (req, res) => {
 });
 
 app.post("/move", (req, res) => {
-  // TODO
-  res.send({ move: 'down' });
+  const state = req.body as GameState;
+  res.send({ move: chooseMove(state) });
 });
 
 app.post("/end", (req, res) => {
