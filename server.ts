@@ -29,7 +29,7 @@ app.post("/start", (req, res) => {
 
 app.post("/move", (req, res) => {
   const state = req.body as GameState;
-  res.send({ move: chooseMove(state) });
+  res.send({ move: chooseMove(state, true) });
 });
 
 app.post("/end", (req, res) => {

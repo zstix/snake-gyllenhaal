@@ -1,3 +1,5 @@
+import { chooseMove } from '../snakeLogic';
+import { unique, range } from '../utils';
 import { GameState, Direction, Position } from '../types';
 
 type Element = "space" | "head" | "body";
@@ -8,6 +10,9 @@ interface TestCase {
   always: Direction[];
   never: Direction[];
 }
+
+// The number of tests for each scenario (to account for random).
+const NUM_TESTS = 100;
 
 const MOCK_GAME = {
   id: "mock-game",
@@ -76,7 +81,7 @@ const getMockBoardState = (board: Element[][]): GameState => {
 
 const runTests = test.each([
   {
-    name: "avoid left wall",
+    name: "avoid left wall and neck",
     board: [
       [_, _],
       [h, b],
@@ -89,5 +94,16 @@ const runTests = test.each([
 
 runTests("test: $name", ({ board, always, never }: TestCase) => {
   const state = getMockBoardState(board);
-  expect(state.you.head).toEqual({x : 0, y: 1});
+
+  const moves = range(NUM_TESTS).reduce<Direction[]>((acc) => {
+    return unique([...acc, chooseMove(state)]);
+  }, []);
+
+  for (const goodMove of always) {
+    expect(moves).toContain(goodMove);
+  }
+
+  for (const badMove of never) {
+    expect(moves).not.toContain(badMove);
+  }
 });

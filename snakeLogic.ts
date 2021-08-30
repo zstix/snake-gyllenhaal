@@ -1,6 +1,5 @@
 import { Board, Direction, Position, GameState } from './types';
-
-const chooseRandom = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
+import { randomItem } from './utils';
 
 const getNextMove = ({ x, y}: Position, dir: Direction): Position => {
   const moves: Record<Direction, Position> = {
@@ -13,20 +12,39 @@ const getNextMove = ({ x, y}: Position, dir: Direction): Position => {
   return moves[dir];
 }
 
-const avoidWalls = ({ width, height }: Board, pos: Position) => (dir: Direction): boolean => {
-  const { x, y } = getNextMove(pos, dir);
-  return x >= 0 && x < width && y >= 0 && y < height;
+const notWalls = (board: Board, pos: Position) => (dir: Direction): boolean => {
+  const { width, height } = board;
+  const { x, y } = pos;
+
+  const moves: Record<Direction, boolean> = {
+    "left": x > 0,
+    "right": x < width,
+    "down": y > 0,
+    "up": y < height
+  };
+
+  return moves[dir];
 }
 
-export const chooseMove = (state: GameState): Direction => {
+const notBody = (body: Position[], pos: Position) => (dir: Direction): boolean => {
+  const { x, y } = getNextMove(pos, dir);
+
+  return body.some((segment) => (segment.x !== x && segment.y !== y));
+}
+
+export const chooseMove = (state: GameState, debug = false): Direction => {
   const { board, you } = state;
+  const { head, body } = you;
 
   const possibleMoves = <Direction[]>["left", "right", "up", "down"]
-    .filter(avoidWalls(board, you.head));
+    .filter(notWalls(board, head))
+    .filter(notBody(body, head));
 
-  const chosenMove = chooseRandom(possibleMoves);
+  const chosenMove = randomItem(possibleMoves);
 
-  console.log(`${state.game.id} MOVE ${state.turn}: ${chosenMove} (out of ${possibleMoves})`);
+  if (debug) {
+    console.log(`${state.game.id} MOVE ${state.turn}: ${chosenMove} (out of ${possibleMoves})`);
+  }
   
   return chosenMove;
 }
