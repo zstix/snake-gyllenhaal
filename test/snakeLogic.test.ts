@@ -12,7 +12,7 @@ interface TestCase {
 }
 
 // The number of tests for each scenario (to account for random).
-const NUM_TESTS = 100;
+const NUM_TESTS = 20;
 
 const MOCK_GAME = {
   id: "mock-game",
@@ -29,6 +29,11 @@ const MOCK_SNAKE = {
   health: 20,
   latency: 'mock-latency',
 }
+
+const UP = "up";
+const DOWN = "down";
+const LEFT = "left";
+const RIGHT = "right";
 
 const _ = "space";
 const h = "head";
@@ -87,9 +92,29 @@ const runTests = test.each([
       [h, b],
       [_, _],
     ],
-    always: ["up", "down"],
-    never: ["left", "right"]
-  }
+    always: [UP, DOWN],
+    never: [LEFT, RIGHT]
+  },
+  {
+    name: "avoid corners and neck",
+    board: [
+      [h, _],
+      [b, _],
+      [_, _],
+    ],
+    always: [RIGHT],
+    never: [LEFT, UP, DOWN]
+  },
+  {
+    name: "avoid long self",
+    board: [
+      [b, b, b],
+      [b, h, b],
+      [_, _, _],
+    ],
+    always: [DOWN],
+    never: [LEFT, UP, RIGHT]
+  },
 ]);
 
 runTests("test: $name", ({ board, always, never }: TestCase) => {
