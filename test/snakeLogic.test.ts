@@ -1,6 +1,6 @@
-import { chooseMove } from '../snakeLogic';
-import { unique, range } from '../utils';
-import { GameState, Direction, Position } from '../types';
+import { chooseMove } from '../src/snakeLogic';
+import { unique, range } from '../src/utils';
+import { GameState, Direction, Position } from '../src/types';
 
 type Element = "space" | "head" | "body";
 

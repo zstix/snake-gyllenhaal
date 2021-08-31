@@ -4,7 +4,7 @@
   "description": "A simple Battlensake written in typescript",
   "main": "index.js",
   "scripts": {
-    "serve": "ts-node server.ts",
+    "serve": "ts-node src/server.ts",
     "test": "jest"
   },
   "author": "Zack Stickles <zstickles@pm.me>",
