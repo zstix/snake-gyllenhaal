@@ -39,6 +39,26 @@ const runTests = test.each([
     never: [LEFT, RIGHT]
   },
   {
+    name: "avoid right wall and neck",
+    board: [
+      [_, _],
+      [b, h],
+      [_, _],
+    ],
+    always: [UP, DOWN],
+    never: [LEFT, RIGHT]
+  },
+  {
+    name: "avoid top wall and neck",
+    board: [
+      [_, h, _],
+      [_, b, _],
+      [_, _, _],
+    ],
+    always: [LEFT, RIGHT],
+    never: [UP, DOWN]
+  },
+  {
     name: "avoid corners and neck",
     board: [
       [h, _],

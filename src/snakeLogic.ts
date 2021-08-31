@@ -23,7 +23,7 @@ const notWalls = (board: Board, pos: Position) => (dir: Direction): boolean => {
 
   const moves: Record<Direction, boolean> = {
     "left": x > 0,
-    "right": x < width,
+    "right": x < width - 1,
     "down": y > 0,
     "up": y < height - 1
   };
