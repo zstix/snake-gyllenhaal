@@ -24,6 +24,8 @@ const h = "head";
 const b = "body";
 const X = "snake-x-head"
 const x = "snake-x-body"
+const Y = "snake-y-head"
+const y = "snake-y-body"
 
 const runTests = test.each([
   {
@@ -57,7 +59,7 @@ const runTests = test.each([
     never: [LEFT, UP, RIGHT]
   },
   {
-    name: "avoid 1 other snake",
+    name: "avoid 1 other snake and wall",
     board: [
       [_, _, _],
       [X, h, _],
@@ -65,6 +67,16 @@ const runTests = test.each([
     ],
     always: [UP, RIGHT],
     never: [LEFT, DOWN]
+  },
+  {
+    name: "avoid 2 other snakes",
+    board: [
+      [_, _, _],
+      [X, h, Y],
+      [x, b, y],
+    ],
+    always: [UP],
+    never: [LEFT, DOWN, RIGHT]
   }
 ]);
 

@@ -9,6 +9,7 @@ interface MockSnake {
 interface MockSnakes {
   hero: MockSnake;
   x?: MockSnake;
+  y?: MockSnake;
 }
 
 const MOCK_GAME = {
@@ -19,6 +20,18 @@ const MOCK_GAME = {
     version: "1",
   },
 };
+
+const addMockSnake = (snakes: MockSnakes, key: string, type: keyof MockSnake, pos: Position): MockSnakes => {
+  if (type === 'head') {
+    return snakes[key]
+      ? {...snakes, [key]: {...snakes[key], head: pos }}
+      : {...snakes, [key]: { head: pos, body: [] }}
+  }
+
+  return snakes[key]
+    ? {...snakes, [key]: {...snakes[key], body: [...(snakes[key]?.body || []), pos] }}
+    : {...snakes, [key]: { body: [pos] }};
+}
 
 const getMockSnakes = (board: BoardElement[][]): MockSnakes =>
   board.reduce((rowAcc, row, i) => {
@@ -31,18 +44,18 @@ const getMockSnakes = (board: BoardElement[][]): MockSnakes =>
         case 'body':
           return {...acc, hero: {...acc.hero, body: [...acc.hero.body, pos] }};
         case 'snake-x-head':
-          return acc.x
-            ? {...acc, x: {...acc.x, head: pos }}
-            : {...acc, x: { head: pos, body: [] }}
+          return addMockSnake(acc, 'x', 'head', pos);
         case 'snake-x-body':
-          return acc.x
-            ? {...acc, x: {...acc.x, body: [...(acc.x?.body || []), pos] }}
-            : {...acc, x: { body: [pos] }};
+          return addMockSnake(acc, 'x', 'body', pos);
+        case 'snake-y-head':
+          return addMockSnake(acc, 'y', 'head', pos);
+        case 'snake-y-body':
+          return addMockSnake(acc, 'y', 'body', pos);
         default:
           return acc;
       }
     }, rowAcc);
-  }, { hero: { head: null, body: [] }, x: null });
+  }, { hero: { head: null, body: [] }, x: null, y: null });
 
 const getMockSnake = (snake: MockSnake, name = "you") => ({
   id: `mock-snake-${name}`,
@@ -58,13 +71,17 @@ export const getMockBoardState = (board: BoardElement[][]): GameState => {
   const height = board.length;
   const width = board[0].length;
 
-  const { hero, x} = getMockSnakes(board);
+  const { hero, x, y} = getMockSnakes(board);
 
   const you = getMockSnake(hero);
   const snakes = [you];
 
   if (x) {
     snakes.push(getMockSnake(x, "x"));
+  }
+
+  if (y) {
+    snakes.push(getMockSnake(y, "y"));
   }
 
   const mockBoard = {
