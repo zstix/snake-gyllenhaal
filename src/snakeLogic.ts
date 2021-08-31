@@ -1,4 +1,4 @@
-import { Board, Direction, Position, GameState } from './types';
+import { Board, Direction, Position, GameState, Battlesnake } from './types';
 import { randomItem } from './utils';
 
 const MOVES: Direction[] = ["left", "right", "up", "down"];
@@ -31,16 +31,17 @@ const notWalls = (board: Board, pos: Position) => (dir: Direction): boolean => {
   return moves[dir];
 }
 
-const notBody = (body: Position[], pos: Position) => (dir: Direction): boolean =>
-  !bodyContainsPos(body, getNextMove(pos, dir));
+const notSnakeBodies = (snakes: Battlesnake[], pos: Position) => (dir: Direction): boolean =>
+  snakes.reduce((okay, { body }) => okay && !bodyContainsPos(body, getNextMove(pos, dir)), true);
 
 export const chooseMove = (state: GameState, debug = false): Direction => {
   const { board, you } = state;
-  const { head, body } = you;
+  const { head } = you;
+  const { snakes } = board;
 
   const possibleMoves = MOVES
     .filter(notWalls(board, head))
-    .filter(notBody(body, head));
+    .filter(notSnakeBodies(snakes, head));
 
   const chosenMove = randomItem(possibleMoves);
 

@@ -1,34 +1,18 @@
-import { chooseMove } from '../src/snakeLogic';
 import { unique, range } from '../src/utils';
-import { GameState, Direction, Position } from '../src/types';
-
-type Element = "space" | "head" | "body";
+import { getMockBoardState } from './utils';
+import { BoardElement } from './types';
+import { Direction } from '../src/types';
+import { chooseMove } from '../src/snakeLogic';
 
 interface TestCase {
   name: string;
-  board: Element[][];
+  board: BoardElement[][];
   always: Direction[];
   never: Direction[];
 }
 
 // The number of tests for each scenario (to account for random).
 const NUM_TESTS = 20;
-
-const MOCK_GAME = {
-  id: "mock-game",
-  timeout: 0,
-  ruleset: {
-    name: "default",
-    version: "1",
-  },
-};
-
-const MOCK_SNAKE = {
-  id: 'mock-snake',
-  name: 'mock-snake',
-  health: 20,
-  latency: 'mock-latency',
-}
 
 const UP = "up";
 const DOWN = "down";
@@ -38,51 +22,8 @@ const RIGHT = "right";
 const _ = "space";
 const h = "head";
 const b = "body";
-
-const getMockYou = (board: Element[][]): {head: Position, body: Position[]} => {
-  return board.reduce((rowAcc, row, i) => {
-    return row.reduce((colAcc, element, x) => {
-      const pos = { x, y: board.length - i - 1 };
-
-      switch (element) {
-        case h:
-          return {...colAcc, head: pos };
-        case b:
-          return {...colAcc, body: [...colAcc.body, pos]};
-        default:
-          return colAcc;
-      }
-    }, rowAcc);
-  }, { head: null, body: [] });
-};
-
-const getMockBoardState = (board: Element[][]): GameState => {
-  const height = board.length;
-  const width = board[0].length;
-
-  // TODO: implement other snakes
-  const { head, body } = getMockYou(board);
-  const you = {
-    ...MOCK_SNAKE,
-    head,
-    body,
-    length: body.length + 1
-  };
-
-  const mockBoard = {
-    width,
-    height,
-    food: [], // TODO: implement food
-    snakes: [you],
-  }
-
-  return {
-    game: MOCK_GAME,
-    board: mockBoard,
-    turn: 1,
-    you
-  };
-};
+const X = "snake-x-head"
+const x = "snake-x-body"
 
 const runTests = test.each([
   {
@@ -115,6 +56,16 @@ const runTests = test.each([
     always: [DOWN],
     never: [LEFT, UP, RIGHT]
   },
+  {
+    name: "avoid 1 other snake",
+    board: [
+      [_, _, _],
+      [X, h, _],
+      [x, b, _],
+    ],
+    always: [UP, RIGHT],
+    never: [LEFT, DOWN]
+  }
 ]);
 
 runTests("test: $name", ({ board, always, never }: TestCase) => {

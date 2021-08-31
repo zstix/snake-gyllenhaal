@@ -1,0 +1,1 @@
+export type BoardElement = "space" | "head" | "body" | "snake-x-head" | "snake-x-body";
