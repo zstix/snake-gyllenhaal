@@ -1,5 +1,5 @@
 import { Board, Direction, Position, GameState, Battlesnake } from "./types";
-import { randomItem, getDistance } from "./utils";
+import { shuffle, getDistance } from "./utils";
 
 const MOVES: Direction[] = ["left", "right", "up", "down"];
 
@@ -49,7 +49,7 @@ export const chooseMove = (state: GameState, debug = false): Direction => {
   const { head } = you;
   const { snakes } = board;
 
-  let possibleMoves = MOVES;
+  let possibleMoves = shuffle(MOVES);
 
   if (state.game.ruleset.name !== 'wrapped') {
     possibleMoves = possibleMoves.filter(notWalls(board, head));
@@ -57,7 +57,7 @@ export const chooseMove = (state: GameState, debug = false): Direction => {
 
   possibleMoves = possibleMoves.filter(notSnakeBodies(snakes, head));
 
-  const chosenMove = randomItem(possibleMoves);
+  const chosenMove = possibleMoves[0];
 
   if (debug) {
     console.log(
