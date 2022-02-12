@@ -49,9 +49,13 @@ export const chooseMove = (state: GameState, debug = false): Direction => {
   const { head } = you;
   const { snakes } = board;
 
-  const possibleMoves = MOVES.filter(notWalls(board, head)).filter(
-    notSnakeBodies(snakes, head)
-  );
+  let possibleMoves = MOVES;
+
+  if (state.game.ruleset.name !== 'wrapped') {
+    possibleMoves = possibleMoves.filter(notWalls(board, head));
+  }
+
+  possibleMoves = possibleMoves.filter(notSnakeBodies(snakes, head));
 
   const chosenMove = randomItem(possibleMoves);
 

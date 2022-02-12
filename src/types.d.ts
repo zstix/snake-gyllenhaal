@@ -2,7 +2,7 @@ export interface Game {
   id: string;
   timeout: number;
   ruleset: {
-    name: string;
+    name: "solo" | "standard" | "royale" | "squad" | "constrictor" | "wrapped";
     version: string;
   };
 }
