@@ -4,7 +4,7 @@ export interface Game {
   ruleset: {
     name: string;
     version: string;
-  }
+  };
 }
 
 export interface Position {
@@ -14,16 +14,23 @@ export interface Position {
 
 export type Direction = "up" | "down" | "left" | "right";
 
+interface BattlesnakeCustomizations {
+  color: string;
+  head: string;
+  tail: string;
+}
+
 export interface Battlesnake {
   id: string;
   name: string;
   health: number;
-  body: Position[],
+  body: Position[];
   latency: string;
   head: Position;
   length: number;
   shout?: string;
   squad?: string;
+  customizations: BattlesnakeCustomizations;
 }
 
 export interface Board {
