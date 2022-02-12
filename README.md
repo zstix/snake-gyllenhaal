@@ -1,17 +1,5 @@
-# ZSS TS Snake
+# Snake Gyllenhaal
 
-My second Battlesnake. It's more functional, but still not very bright...yet.
+A functional Battlesnake written in Typescript. It's not very bright at the moment.
 
-## Local Development
-
-To run the server with npm:
-
-```sh
-npm run serve
-```
-
-And to expose the server via ngrok (don't forget to update Battlesnake settings):
-
-```sh
-ngrok http 8080
-```
+![Snake Gyllenhaal](https://media.giphy.com/media/LZTfhdtnk9TSU/giphy.gif)
