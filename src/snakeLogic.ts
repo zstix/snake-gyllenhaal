@@ -14,8 +14,8 @@ const getNextMove = ({ x, y }: Position, dir: Direction): Position => {
   return moves[dir];
 };
 
-const bodyContainsPos = (body: Position[], pos: Position): boolean =>
-  body.some((segment) => segment.x == pos.x && segment.y == pos.y);
+const arrContainsPos = (arr: Position[], pos: Position): boolean =>
+  arr.some((segment) => segment.x == pos.x && segment.y == pos.y);
 
 const notWalls =
   (board: Board, pos: Position) =>
@@ -37,12 +37,26 @@ const notSnakeBodies =
   (snakes: Battlesnake[], pos: Position) =>
   (dir: Direction): boolean =>
     snakes.reduce(
-      (okay, { body }) => okay && !bodyContainsPos(body, getNextMove(pos, dir)),
+      (okay, { body }) => okay && !arrContainsPos(body, getNextMove(pos, dir)),
       true
     );
 
 const getClosestFood = (food: Position[], head: Position): Position =>
   food.sort((a, b) => getDistance(a, head) - getDistance(b, head))[0];
+
+const preferNotHazard = (hazards: Position[], head: Position) => (a: Direction, b: Direction) => {
+  const aPos = getNextMove(head, a);
+  const bPos = getNextMove(head, b);
+
+  switch(true) {
+    case arrContainsPos(hazards, aPos):
+      return 1;
+    case arrContainsPos(hazards, bPos):
+      return -1;
+    default:
+      return 0;
+  }
+}
 
 export const chooseMove = (state: GameState, debug = false): Direction => {
   const { board, you } = state;
@@ -56,6 +70,8 @@ export const chooseMove = (state: GameState, debug = false): Direction => {
   }
 
   possibleMoves = possibleMoves.filter(notSnakeBodies(snakes, head));
+
+  possibleMoves = possibleMoves.sort(preferNotHazard(board.hazards, head));
 
   const chosenMove = possibleMoves[0];
 
