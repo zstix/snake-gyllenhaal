@@ -1,36 +1,39 @@
 import { Direction, Position, GameState, Battlesnake } from "./types";
-import Point from './Point';
-import { shuffle } from "./utils";
+import { getAdjacent, isInArray } from "./point";
+import { prop, shuffle } from "./utils";
 
 const MOVES: Direction[] = ["left", "right", "up", "down"];
 
-// Not applicable for wrapped games
-// const avoidWalls = (board: Board, pos: Position) => (dir: Direction) =>
-//   Point.from(pos).getAdjacent(dir).isOnBoard(board);
-
-const avoidSnakeBodies = (snakes: Battlesnake[], pos: Position) => (dir: Direction) =>
-  !snakes.some(({ body }) => Point.from(pos).getAdjacent(dir).isInArray(body));
-
-const preferNotHazard = (hazards: Position[], head: Position) => (a: Direction, b: Direction) => {
-  switch(true) {
-    case Point.from(head).getAdjacent(a).isInArray(hazards):
-      return 1;
-    case Point.from(head).getAdjacent(b).isInArray(hazards):
-      return -1;
-    default:
-      return 0;
-  }
+interface NextPosition extends Position {
+  dir: Direction;
 }
+
+const avoidSnakes = (snakes: Battlesnake[]) => (next: NextPosition) =>
+  !snakes.map(prop("body")).some(isInArray(next));
+
+const preferNotHazard =
+  (hazards: Position[]) => (a: NextPosition, b: NextPosition) => {
+    switch (true) {
+      case isInArray(a)(hazards): // TODO: curry
+        return 1;
+      case isInArray(b)(hazards): // TODO: curry
+        return -1;
+      default:
+        return 0;
+    }
+  };
 
 export const chooseMove = (state: GameState, debug = false): Direction => {
   const { board, you } = state;
+  const { snakes, hazards } = board;
   const { head } = you;
 
   const possibleMoves = shuffle(MOVES)
-    .filter(avoidSnakeBodies(board.snakes, head))
-    .sort(preferNotHazard(board.hazards, head));
+    .map(getAdjacent(head))
+    .filter(avoidSnakes(snakes))
+    .sort(preferNotHazard(hazards));
 
-  const chosenMove = possibleMoves[0];
+  const chosenMove = possibleMoves[0].dir;
 
   if (debug) {
     console.log(

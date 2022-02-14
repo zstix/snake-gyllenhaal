@@ -31,3 +31,8 @@ export const pipe = <T extends any[], R>(
 
   return (...args: T) => piped(fn1(...args));
 };
+
+export const prop =
+  <T, K extends keyof T>(key: K) =>
+  (obj: T) =>
+    obj[key];

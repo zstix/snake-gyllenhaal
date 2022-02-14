@@ -1,43 +1,23 @@
-import { Board, Direction, Position } from './types';
+import { Board, Direction, Position } from "./types";
 
-class Point {
-  x: number;
-  y: number;
-
-  constructor(pos: Position) {
-    this.x = pos.x;
-    this.y = pos.y;
-  };
-
-  static from(pos: Position) {
-    return new Point(pos);
-  };
-
-  getAdjacent(dir: Direction) {
+export const getAdjacent =
+  ({ x, y }: Position) =>
+  (dir: Direction): Position & { dir: Direction } => {
     const moves: Record<Direction, Position> = {
-      left: { x: this.x - 1, y: this.y },
-      right: { x: this.x + 1, y: this.y },
-      down: { x: this.x, y: this.y - 1 },
-      up: { x: this.x, y: this.y + 1 },
+      left: { x: x - 1, y },
+      right: { x: x + 1, y },
+      down: { x, y: y - 1 },
+      up: { x, y: y + 1 },
     };
 
-    return new Point(moves[dir]);
+    return { ...moves[dir], dir };
   };
 
-  getDistance(pos: Position) {
-    return Math.sqrt(Math.pow(pos.x - this.x, 2) + Math.pow(pos.y - this.y, 2));
-  }
+// TODO: curry
+export const isInArray = (pos: Position) => (arr: Position[]) =>
+  arr.some(({ x, y }) => x == pos.x && y == pos.y);
 
-  isInArray(arr: Position[]) {
-    return arr.some(({ x, y }) => x == this.x && y == this.y);
-  };
-
-  isOnBoard(board: Board) {
-    return this.x > 0 &&
-      this.x < board.width - 1 &&
-      this.y > 0 &&
-      this.y < board.height - 1;
-  }
-};
-
-export default Point;
+export const isOnBoard =
+  ({ x, y }: Position) =>
+  ({ width, height }: Board) =>
+    x > 0 && x < width - 1 && y > 0 && y < height - 1;
