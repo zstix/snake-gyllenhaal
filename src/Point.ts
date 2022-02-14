@@ -4,9 +4,9 @@ class Point {
   x: number;
   y: number;
 
-  constructor({ x, y }: Position) {
-    this.x = x;
-    this.y = y;
+  constructor(pos: Position) {
+    this.x = pos.x;
+    this.y = pos.y;
   };
 
   static from(pos: Position) {
@@ -14,13 +14,11 @@ class Point {
   };
 
   getAdjacent(dir: Direction) {
-    const { x, y } = this;
-
     const moves: Record<Direction, Position> = {
-      left: { x: x - 1, y },
-      right: { x: x + 1, y },
-      down: { x, y: y - 1 },
-      up: { x, y: y + 1 },
+      left: { x: this.x - 1, y: this.y },
+      right: { x: this.x + 1, y: this.y },
+      down: { x: this.x, y: this.y - 1 },
+      up: { x: this.x, y: this.y + 1 },
     };
 
     return new Point(moves[dir]);
@@ -34,11 +32,11 @@ class Point {
     return arr.some(({ x, y }) => x == this.x && y == this.y);
   };
 
-  isOnBoard({ width, height }: Board) {
+  isOnBoard(board: Board) {
     return this.x > 0 &&
-      this.x < width - 1 &&
+      this.x < board.width - 1 &&
       this.y > 0 &&
-      this.y < height - 1;
+      this.y < board.height - 1;
   }
 };
 
