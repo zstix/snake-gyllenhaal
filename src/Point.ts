@@ -18,7 +18,7 @@ export const isInArray = curry((pos: Position, arr: Position[]) =>
   arr.some(({ x, y }) => x == pos.x && y == pos.y)
 );
 
-export const isOnBoard =
-  ({ x, y }: Position) =>
-  ({ width, height }: Board) =>
-    x > 0 && x < width - 1 && y > 0 && y < height - 1;
+export const isOnBoard = curry(
+  ({ x, y }: Position, { width, height }: Board) =>
+    x >= 0 && x < width && y >= 0 && y < height
+);

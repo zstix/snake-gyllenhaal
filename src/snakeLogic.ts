@@ -1,5 +1,5 @@
-import { Direction, Position, GameState, Battlesnake } from "./types";
-import { getAdjacent, isInArray } from "./point";
+import { Board, Direction, Position, GameState, Battlesnake } from "./types";
+import { getAdjacent, isInArray, isOnBoard } from "./point";
 import { prop, shuffle } from "./utils";
 
 const MOVES: Direction[] = ["left", "right", "up", "down"];
@@ -7,6 +7,10 @@ const MOVES: Direction[] = ["left", "right", "up", "down"];
 interface NextPosition extends Position {
   dir: Direction;
 }
+
+// This is not necessary for wrapped mode
+// const avoidWalls = (board: Board) => (next: NextPosition) =>
+//   isOnBoard(next, board);
 
 const avoidSnakes = (snakes: Battlesnake[]) => (next: NextPosition) =>
   !snakes.map(prop("body")).some(isInArray(next));
