@@ -1,5 +1,5 @@
 import { Board, Direction, Position, GameState, Battlesnake } from "./types";
-import { getAdjacent, isInArray, isOnBoard } from "./point";
+import { getAdjacent, getWrappedPos, isInArray } from "./point";
 import { prop, shuffle } from "./utils";
 
 const MOVES: Direction[] = ["left", "right", "up", "down"];
@@ -14,6 +14,11 @@ interface NextPosition extends Position {
 
 const avoidSnakes = (snakes: Battlesnake[]) => (next: NextPosition) =>
   !snakes.map(prop("body")).some(isInArray(next));
+
+// FIXME: issue with snake choosing move on the right side wrapping to left side
+const avoidWrappedSnakes =
+  (snakes: Battlesnake[], board: Board) => (next: NextPosition) =>
+    !snakes.map(prop("body")).some(isInArray(getWrappedPos(next, board)));
 
 const preferNotHazard =
   (hazards: Position[]) => (a: NextPosition, b: NextPosition) => {
@@ -35,6 +40,7 @@ export const chooseMove = (state: GameState, debug = false): Direction => {
   const possibleMoves = shuffle(MOVES)
     .map(getAdjacent(head))
     .filter(avoidSnakes(snakes))
+    .filter(avoidWrappedSnakes(snakes, board))
     .sort(preferNotHazard(hazards));
 
   const chosenMove = possibleMoves[0].dir;
