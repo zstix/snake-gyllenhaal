@@ -1,4 +1,5 @@
 import { Board, Direction, Position } from "./types";
+import { curry } from "./utils";
 
 export const getAdjacent =
   ({ x, y }: Position) =>
@@ -13,9 +14,9 @@ export const getAdjacent =
     return { ...moves[dir], dir };
   };
 
-// TODO: curry
-export const isInArray = (pos: Position) => (arr: Position[]) =>
-  arr.some(({ x, y }) => x == pos.x && y == pos.y);
+export const isInArray = curry((pos: Position, arr: Position[]) =>
+  arr.some(({ x, y }) => x == pos.x && y == pos.y)
+);
 
 export const isOnBoard =
   ({ x, y }: Position) =>

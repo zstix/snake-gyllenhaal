@@ -14,9 +14,9 @@ const avoidSnakes = (snakes: Battlesnake[]) => (next: NextPosition) =>
 const preferNotHazard =
   (hazards: Position[]) => (a: NextPosition, b: NextPosition) => {
     switch (true) {
-      case isInArray(a)(hazards): // TODO: curry
+      case isInArray(a, hazards):
         return 1;
-      case isInArray(b)(hazards): // TODO: curry
+      case isInArray(b, hazards):
         return -1;
       default:
         return 0;
