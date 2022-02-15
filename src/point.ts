@@ -14,22 +14,16 @@ export const getAdjacent =
     return { ...moves[dir], dir };
   };
 
-export const getWrappedPos = (pos: Position, board: Board) => {
-  if (isOnBoard(pos, board)) {
-    return pos;
-  }
-
-  return {
-    x: pos.x < 0 ? board.width - 1 : 0,
-    y: pos.y < 0 ? board.height - 1 : 0,
-  };
-};
+export const isOnBoard = curry(
+  ({ x, y }: Position, { width, height }: Board) =>
+    x >= 0 && x < width && y >= 0 && y < height
+);
 
 export const isInArray = curry((pos: Position, arr: Position[]) =>
   arr.some(({ x, y }) => x == pos.x && y == pos.y)
 );
 
-export const isOnBoard = curry(
-  ({ x, y }: Position, { width, height }: Board) =>
-    x >= 0 && x < width && y >= 0 && y < height
-);
+export const getWrappedPos = (pos: Position, { width, height }: Board) => ({
+  x: pos.x < 0 ? width - 1 : pos.x >= width ? 0 : pos.x,
+  y: pos.y < 0 ? height - 1 : pos.y >= height ? 0 : pos.y,
+});
