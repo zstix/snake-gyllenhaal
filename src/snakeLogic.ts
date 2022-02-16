@@ -6,24 +6,29 @@ import {
   Battlesnake,
   NextPosition,
 } from "./types";
-import { getAdjacent, getWrappedPos, isInArray, getAllAdjacent } from "./point";
+import {
+  equals,
+  getAdjacent,
+  getWrappedPos,
+  isInArray,
+  getAllAdjacent,
+} from "./point";
 import { prop, shuffle, first } from "./utils";
 
 const MOVES: Direction[] = ["left", "right", "up", "down"];
 
+const snakesEqual = (a: Battlesnake, b: Battlesnake) => equals(a.head, b.head);
+
 const avoidSnakes = (snakes: Battlesnake[]) => (next: NextPosition) =>
   !snakes.map(prop("body")).some(isInArray(next));
 
-// FIXME: get this working
-// [].some(() => true) == [].some(() => false)
 const avoidBigSnakeHeads =
   (snakes: Battlesnake[], board: Board, you: Battlesnake) =>
   (next: NextPosition) =>
     !snakes
-      .filter((snake) => snake != you)
+      .filter((snake) => !snakesEqual(snake, you))
       .filter((snake) => snake.length >= you.length)
-      .map(prop("body"))
-      .map(first)
+      .map(prop("head"))
       .map((head) => getAllAdjacent(head).map(getWrappedPos(board)))
       .some(isInArray(next));
 
@@ -48,7 +53,8 @@ export const chooseMove = (state: GameState, debug = false): Direction => {
     .map(getAdjacent(head))
     .map(getWrappedPos(board))
     .filter(avoidSnakes(snakes))
-    // .filter(avoidBigSnakeHeads(snakes, board, you)) // TODO: uncomment
+    // NOTE: this should probably _prefer_ not avoid
+    .filter(avoidBigSnakeHeads(snakes, board, you))
     .sort(preferNotHazard(hazards))
     .map(prop("dir"));
 
