@@ -32,6 +32,20 @@ const avoidBigSnakeHeads =
       .map((head) => getAllAdjacent(head).map(getWrappedPos(board)))
       .some(isInArray(next));
 
+const preferNotBigSnakeNextMoves =
+  (snakes: Battlesnake[], board: Board, you: Battlesnake) =>
+  (a: NextPosition, b: NextPosition) => {
+    const avoid = avoidBigSnakeHeads(snakes, board, you);
+    switch (true) {
+      case avoid(a):
+        return -1;
+      case avoid(b):
+        return 1;
+      default:
+        0;
+    }
+  };
+
 const preferNotHazard =
   (hazards: Position[]) => (a: NextPosition, b: NextPosition) => {
     switch (true) {
@@ -53,8 +67,7 @@ export const chooseMove = (state: GameState, debug = false): Direction => {
     .map(getAdjacent(head))
     .map(getWrappedPos(board))
     .filter(avoidSnakes(snakes))
-    // NOTE: this should probably _prefer_ not avoid
-    .filter(avoidBigSnakeHeads(snakes, board, you))
+    .sort(preferNotBigSnakeNextMoves(snakes, board, you))
     .sort(preferNotHazard(hazards))
     .map(prop("dir"));
 
