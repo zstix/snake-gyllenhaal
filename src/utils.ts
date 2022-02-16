@@ -37,6 +37,16 @@ export const prop =
   (obj: T) =>
     obj[key];
 
+export const first = <T>(xs: T[]): T => xs[0];
+
+export const trace =
+  <T>(...args: any[]) =>
+  (x: T) => {
+    console.log(...args);
+    console.log("\t", x);
+    return x;
+  };
+
 // --- curry --- \\
 
 type SameLength<T extends any[]> = Extract<{ [k in keyof T]: any }, any[]>;

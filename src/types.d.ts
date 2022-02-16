@@ -47,3 +47,7 @@ export interface GameState {
   board: Board;
   you: Battlesnake;
 }
+
+export interface NextPosition extends Position {
+  dir: Direction;
+}

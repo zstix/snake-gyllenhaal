@@ -1,12 +1,15 @@
-import { Board, Direction, Position, GameState, Battlesnake } from "./types";
-import { getAdjacent, getWrappedPos, isInArray } from "./point";
-import { prop, shuffle } from "./utils";
+import {
+  Board,
+  Direction,
+  Position,
+  GameState,
+  Battlesnake,
+  NextPosition,
+} from "./types";
+import { getAdjacent, getWrappedPos, isInArray, getAllAdjacent } from "./point";
+import { prop, shuffle, first } from "./utils";
 
 const MOVES: Direction[] = ["left", "right", "up", "down"];
-
-interface NextPosition extends Position {
-  dir: Direction;
-}
 
 // This is not necessary for wrapped mode
 // const avoidWalls = (board: Board) => (next: NextPosition) =>
@@ -15,10 +18,20 @@ interface NextPosition extends Position {
 const avoidSnakes = (snakes: Battlesnake[]) => (next: NextPosition) =>
   !snakes.map(prop("body")).some(isInArray(next));
 
-// FIXME: issue with snake choosing move on the right side wrapping to left side
 const avoidWrappedSnakes =
   (snakes: Battlesnake[], board: Board) => (next: NextPosition) =>
     !snakes.map(prop("body")).some(isInArray(getWrappedPos(next, board)));
+
+// FIXME: this is not working correctly
+const avoidBigSnakeHeads =
+  (snakes: Battlesnake[], board: Board, you: Battlesnake) =>
+  (next: NextPosition) =>
+    snakes
+      .filter((snake) => snake.length >= you.length)
+      .map(prop("body"))
+      .map(first)
+      .map(getAllAdjacent)
+      .some((head) => !isInArray(getWrappedPos(next, board), head));
 
 const preferNotHazard =
   (hazards: Position[]) => (a: NextPosition, b: NextPosition) => {
@@ -37,17 +50,23 @@ export const chooseMove = (state: GameState, debug = false): Direction => {
   const { snakes, hazards } = board;
   const { head } = you;
 
+  // TODO: always get wrapped moves and then treat functions normally
   const possibleMoves = shuffle(MOVES)
     .map(getAdjacent(head))
     .filter(avoidSnakes(snakes))
     .filter(avoidWrappedSnakes(snakes, board))
-    .sort(preferNotHazard(hazards));
+    // TODO: get working
+    // .filter(avoidBigSnakeHeads(snakes, board, you))
+    .sort(preferNotHazard(hazards))
+    .map(prop("dir"));
 
-  const chosenMove = possibleMoves[0].dir;
+  const chosenMove = possibleMoves.length
+    ? possibleMoves[0]
+    : first(shuffle(MOVES));
 
   if (debug) {
     console.log(
-      `${state.game.id} MOVE ${state.turn}: ${chosenMove} (out of ${possibleMoves})`
+      `${state.game.id} MOVE ${state.turn}: ${chosenMove} (out of [${possibleMoves}])`
     );
   }
 
