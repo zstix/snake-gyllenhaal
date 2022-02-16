@@ -11,27 +11,21 @@ import { prop, shuffle, first } from "./utils";
 
 const MOVES: Direction[] = ["left", "right", "up", "down"];
 
-// This is not necessary for wrapped mode
-// const avoidWalls = (board: Board) => (next: NextPosition) =>
-//   isOnBoard(next, board);
-
 const avoidSnakes = (snakes: Battlesnake[]) => (next: NextPosition) =>
   !snakes.map(prop("body")).some(isInArray(next));
 
-const avoidWrappedSnakes =
-  (snakes: Battlesnake[], board: Board) => (next: NextPosition) =>
-    !snakes.map(prop("body")).some(isInArray(getWrappedPos(next, board)));
-
-// FIXME: this is not working correctly
+// FIXME: get this working
+// [].some(() => true) == [].some(() => false)
 const avoidBigSnakeHeads =
   (snakes: Battlesnake[], board: Board, you: Battlesnake) =>
   (next: NextPosition) =>
-    snakes
+    !snakes
+      .filter((snake) => snake != you)
       .filter((snake) => snake.length >= you.length)
       .map(prop("body"))
       .map(first)
-      .map(getAllAdjacent)
-      .some((head) => !isInArray(getWrappedPos(next, board), head));
+      .map((head) => getAllAdjacent(head).map(getWrappedPos(board)))
+      .some(isInArray(next));
 
 const preferNotHazard =
   (hazards: Position[]) => (a: NextPosition, b: NextPosition) => {
@@ -50,13 +44,11 @@ export const chooseMove = (state: GameState, debug = false): Direction => {
   const { snakes, hazards } = board;
   const { head } = you;
 
-  // TODO: always get wrapped moves and then treat functions normally
   const possibleMoves = shuffle(MOVES)
     .map(getAdjacent(head))
+    .map(getWrappedPos(board))
     .filter(avoidSnakes(snakes))
-    .filter(avoidWrappedSnakes(snakes, board))
-    // TODO: get working
-    // .filter(avoidBigSnakeHeads(snakes, board, you))
+    // .filter(avoidBigSnakeHeads(snakes, board, you)) // TODO: uncomment
     .sort(preferNotHazard(hazards))
     .map(prop("dir"));
 

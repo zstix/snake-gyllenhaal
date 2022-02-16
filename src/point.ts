@@ -34,7 +34,8 @@ export const isInArray = curry((pos: Position, arr: Position[]) =>
   arr.some(equals(pos))
 );
 
-export const getWrappedPos = (pos: Position, { width, height }: Board) => ({
-  x: pos.x < 0 ? width - 1 : pos.x >= width ? 0 : pos.x,
-  y: pos.y < 0 ? height - 1 : pos.y >= height ? 0 : pos.y,
+export const getWrappedPos = ({ width, height }: Board) => (next: NextPosition) => ({
+  ...next,
+  x: next.x < 0 ? width - 1 : next.x >= width ? 0 : next.x,
+  y: next.y < 0 ? height - 1 : next.y >= height ? 0 : next.y,
 });
