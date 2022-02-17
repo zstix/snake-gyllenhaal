@@ -1,8 +1,8 @@
-import { unique, range } from '../src/utils';
-import { getMockBoardState } from './utils';
-import { BoardElement } from './types';
-import { Direction } from '../src/types';
-import { chooseMove } from '../src/snakeLogic';
+import { unique, range } from "../src/utils";
+import { getMockBoardState } from "./utils";
+import { BoardElement } from "./types";
+import { Direction } from "../src/types";
+import { chooseMove } from "../src/snakeLogic";
 
 interface TestCase {
   name: string;
@@ -22,12 +22,13 @@ const RIGHT = "right";
 const _ = "space";
 const h = "head";
 const b = "body";
-const X = "snake-x-head"
-const x = "snake-x-body"
-const Y = "snake-y-head"
-const y = "snake-y-body"
+const X = "snake-x-head";
+const x = "snake-x-body";
+const Y = "snake-y-head";
+const y = "snake-y-body";
 
-const runTests = test.each([
+/*
+const wallTests = [
   {
     name: "avoid left wall and neck",
     board: [
@@ -36,7 +37,7 @@ const runTests = test.each([
       [_, _],
     ],
     always: [UP, DOWN],
-    never: [LEFT, RIGHT]
+    never: [LEFT, RIGHT],
   },
   {
     name: "avoid right wall and neck",
@@ -46,7 +47,7 @@ const runTests = test.each([
       [_, _],
     ],
     always: [UP, DOWN],
-    never: [LEFT, RIGHT]
+    never: [LEFT, RIGHT],
   },
   {
     name: "avoid top wall and neck",
@@ -56,7 +57,7 @@ const runTests = test.each([
       [_, _, _],
     ],
     always: [LEFT, RIGHT],
-    never: [UP, DOWN]
+    never: [UP, DOWN],
   },
   {
     name: "avoid corners and neck",
@@ -66,17 +67,7 @@ const runTests = test.each([
       [_, _],
     ],
     always: [RIGHT],
-    never: [LEFT, UP, DOWN]
-  },
-  {
-    name: "avoid long self",
-    board: [
-      [b, b, b],
-      [b, h, b],
-      [_, _, _],
-    ],
-    always: [DOWN],
-    never: [LEFT, UP, RIGHT]
+    never: [LEFT, UP, DOWN],
   },
   {
     name: "avoid 1 other snake and wall",
@@ -86,7 +77,65 @@ const runTests = test.each([
       [x, b, _],
     ],
     always: [UP, RIGHT],
-    never: [LEFT, DOWN]
+    never: [LEFT, DOWN],
+  },
+];
+*/
+
+const wrapTests = [
+  {
+    name: "wrap right to avoid self",
+    board: [
+      [_, b, b],
+      [_, b, h],
+      [_, b, b],
+    ],
+    always: [RIGHT],
+    never: [LEFT, UP, DOWN],
+  },
+  {
+    name: "wrap right to avoid other snake",
+    board: [
+      [_, x, X],
+      [_, x, h],
+      [_, _, b],
+    ],
+    always: [RIGHT],
+    never: [LEFT, UP, DOWN],
+  },
+  {
+    name: "wrap corner to avoid self",
+    board: [
+      [_, _, _],
+      [_, b, b],
+      [_, b, h],
+    ],
+    always: [DOWN, RIGHT],
+    never: [LEFT, UP],
+  },
+  // FIXME
+  // {
+  //   name: "avoid wrap to avoid other snake",
+  //   board: [
+  //     [X, _, _],
+  //     [x, _, h],
+  //     [x, _, _],
+  //   ],
+  //   always: [UP, LEFT],
+  //   never: [RIGHT, DOWN],
+  // },
+];
+
+const snakeTests = [
+  {
+    name: "avoid long self",
+    board: [
+      [b, b, b],
+      [b, h, b],
+      [_, _, _],
+    ],
+    always: [DOWN],
+    never: [LEFT, UP, RIGHT],
   },
   {
     name: "avoid 2 other snakes",
@@ -96,8 +145,14 @@ const runTests = test.each([
       [x, b, y],
     ],
     always: [UP],
-    never: [LEFT, DOWN, RIGHT]
-  }
+    never: [LEFT, DOWN, RIGHT],
+  },
+];
+
+const runTests = test.each([
+  // ...wallTests,
+  ...wrapTests,
+  ...snakeTests,
 ]);
 
 runTests("test: $name", ({ board, always, never }: TestCase) => {
