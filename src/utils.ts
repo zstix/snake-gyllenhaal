@@ -39,6 +39,8 @@ export const prop =
 
 export const first = <T>(xs: T[]): T => xs[0];
 
+export const last = <T>(xs: T[]): T => xs[xs.length - 1];
+
 export const trace =
   <T>(...args: any[]) =>
   (x: T) => {

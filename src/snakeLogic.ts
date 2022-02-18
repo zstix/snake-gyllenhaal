@@ -13,14 +13,17 @@ import {
   isInArray,
   getAllAdjacent,
 } from "./point";
-import { prop, shuffle, first } from "./utils";
+import { prop, shuffle, first, last } from "./utils";
 
 const MOVES: Direction[] = ["left", "right", "up", "down"];
 
 const snakesEqual = (a: Battlesnake, b: Battlesnake) => equals(a.head, b.head);
 
 const avoidSnakes = (snakes: Battlesnake[]) => (next: NextPosition) =>
-  !snakes.map(prop("body")).some(isInArray(next));
+  !snakes
+    .map(prop("body"))
+    .map((body) => body.slice(0, -1)) // ignore tails
+    .some(isInArray(next));
 
 const avoidBigSnakeHeads =
   (snakes: Battlesnake[], board: Board, you: Battlesnake) =>
@@ -58,6 +61,23 @@ const preferNotHazard =
     }
   };
 
+const preferNotTails =
+  (snakes: Battlesnake[], you: Battlesnake) =>
+  (a: NextPosition, b: NextPosition) => {
+    const tails = snakes
+      .filter((snake) => !snakesEqual(snake, you))
+      .map(prop("body"))
+      .map(last);
+    switch (true) {
+      case isInArray(a, tails):
+        return 1;
+      case isInArray(a, tails):
+        return -1;
+      default:
+        return 0;
+    }
+  };
+
 export const chooseMove = (state: GameState, debug = false): Direction => {
   const { board, you } = state;
   const { snakes, hazards } = board;
@@ -69,6 +89,7 @@ export const chooseMove = (state: GameState, debug = false): Direction => {
     .filter(avoidSnakes(snakes))
     .sort(preferNotBigSnakeNextMoves(snakes, board, you))
     .sort(preferNotHazard(hazards))
+    .sort(preferNotTails(snakes, you))
     .map(prop("dir"));
 
   const chosenMove = possibleMoves.length

@@ -86,9 +86,9 @@ const wrapTests = [
   {
     name: "wrap right to avoid self",
     board: [
-      [_, b, b],
-      [_, b, h],
-      [_, b, b],
+      [b, b, b],
+      [b, h, _],
+      [b, b, b],
     ],
     always: [RIGHT],
     never: [LEFT, UP, DOWN],
@@ -98,7 +98,7 @@ const wrapTests = [
     board: [
       [_, x, X],
       [_, x, h],
-      [_, _, b],
+      [_, x, b],
     ],
     always: [RIGHT],
     never: [LEFT, UP, DOWN],
@@ -107,8 +107,9 @@ const wrapTests = [
     name: "wrap corner to avoid self",
     board: [
       [_, _, _],
-      [_, b, b],
+      [b, b, b],
       [_, b, h],
+      [_, b, _],
     ],
     always: [DOWN, RIGHT],
     never: [LEFT, UP],
@@ -132,7 +133,7 @@ const snakeTests = [
     board: [
       [b, b, b],
       [b, h, b],
-      [_, _, _],
+      [b, _, b],
     ],
     always: [DOWN],
     never: [LEFT, UP, RIGHT],
@@ -143,9 +144,20 @@ const snakeTests = [
       [_, _, _],
       [X, h, Y],
       [x, b, y],
+      [x, b, y],
     ],
     always: [UP],
     never: [LEFT, DOWN, RIGHT],
+  },
+  {
+    name: "prefer, but don't avoid, tails",
+    board: [
+      [x, X, _, _],
+      [x, h, b, b],
+      [x, x, _, _],
+    ],
+    always: [DOWN],
+    never: [LEFT, UP, RIGHT],
   },
 ];
 
