@@ -20,6 +20,9 @@ export const shuffle = <T>(arr: T[]): T[] => {
   return arr;
 };
 
+export const prefer = (bBetter: boolean, aBetter: boolean) =>
+  bBetter ? -1 : aBetter ? 1 : 0;
+
 export const pipe = <T extends any[], R>(
   fn1: (...args: T) => R,
   ...fns: Array<(a: R) => R>

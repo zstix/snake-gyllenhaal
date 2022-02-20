@@ -13,7 +13,7 @@ import {
   isInArray,
   getAllAdjacent,
 } from "./point";
-import { prop, shuffle, first, last } from "./utils";
+import { prop, shuffle, first, last, prefer } from "./utils";
 
 const MOVES: Direction[] = ["left", "right", "up", "down"];
 
@@ -39,27 +39,12 @@ const preferNotBigSnakeNextMoves =
   (snakes: Battlesnake[], board: Board, you: Battlesnake) =>
   (a: NextPosition, b: NextPosition) => {
     const avoid = avoidBigSnakeHeads(snakes, board, you);
-    switch (true) {
-      case avoid(a):
-        return -1;
-      case avoid(b):
-        return 1;
-      default:
-        0;
-    }
+    return prefer(avoid(a), avoid(b));
   };
 
 const preferNotHazard =
-  (hazards: Position[]) => (a: NextPosition, b: NextPosition) => {
-    switch (true) {
-      case isInArray(a, hazards):
-        return 1;
-      case isInArray(b, hazards):
-        return -1;
-      default:
-        return 0;
-    }
-  };
+  (hazards: Position[]) => (a: NextPosition, b: NextPosition) =>
+    prefer(isInArray(b, hazards), isInArray(a, hazards));
 
 const preferNotTails =
   (snakes: Battlesnake[], you: Battlesnake) =>
