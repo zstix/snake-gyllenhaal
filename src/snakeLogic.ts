@@ -53,19 +53,15 @@ const preferNotTails =
       .filter((snake) => !snakesEqual(snake, you))
       .map(prop("body"))
       .map(last);
-    switch (true) {
-      case isInArray(a, tails):
-        return 1;
-      case isInArray(a, tails):
-        return -1;
-      default:
-        return 0;
-    }
+    return prefer(isInArray(a, tails), isInArray(b, tails));
   };
+
+const preferFood = (food: Position[]) => (a: NextPosition, b: NextPosition) =>
+  prefer(isInArray(b, food), isInArray(a, food));
 
 export const chooseMove = (state: GameState, debug = false): Direction => {
   const { board, you } = state;
-  const { snakes, hazards } = board;
+  const { snakes, hazards, food } = board;
   const { head } = you;
 
   // NOTE: more important preference goes lower in the list
@@ -74,6 +70,7 @@ export const chooseMove = (state: GameState, debug = false): Direction => {
     .map(getAdjacent(head))
     .map(getWrappedPos(board))
     .filter(avoidSnakes(snakes))
+    .sort(preferFood(food))
     .sort(preferNotHazard(hazards))
     .sort(preferNotTails(snakes, you))
     .sort(preferNotBigSnakeNextMoves(snakes, board, you))
