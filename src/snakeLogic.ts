@@ -83,13 +83,15 @@ export const chooseMove = (state: GameState, debug = false): Direction => {
   const { snakes, hazards } = board;
   const { head } = you;
 
+  // NOTE: more important preference goes lower in the list
+
   const possibleMoves = shuffle(MOVES)
     .map(getAdjacent(head))
     .map(getWrappedPos(board))
     .filter(avoidSnakes(snakes))
-    .sort(preferNotBigSnakeNextMoves(snakes, board, you))
     .sort(preferNotHazard(hazards))
     .sort(preferNotTails(snakes, you))
+    .sort(preferNotBigSnakeNextMoves(snakes, board, you))
     .map(prop("dir"));
 
   const chosenMove = possibleMoves.length
