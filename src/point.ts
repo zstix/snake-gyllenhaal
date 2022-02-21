@@ -41,3 +41,9 @@ export const getWrappedPos =
     x: next.x < 0 ? width - 1 : next.x >= width ? 0 : next.x,
     y: next.y < 0 ? height - 1 : next.y >= height ? 0 : next.y,
   });
+
+const getDistance = (a: Position, b: Position) =>
+  Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+
+export const getClosestPosition = (pos: Position, arr: Position[]) =>
+  arr.sort((a, b) => getDistance(a, pos) - getDistance(b, pos))[0];
