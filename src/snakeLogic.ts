@@ -44,7 +44,7 @@ const preferNotBigSnakeNextMoves =
 
 const preferNotHazard =
   (hazards: Position[]) => (a: NextPosition, b: NextPosition) =>
-    prefer(isInArray(b, hazards), isInArray(a, hazards));
+    prefer(isInArray(a, hazards), isInArray(b, hazards));
 
 const preferNotTails =
   (snakes: Battlesnake[], you: Battlesnake) =>
